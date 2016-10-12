@@ -1,13 +1,24 @@
 #!/usr/bin/env python
 #coding: UTF-8
 import numpy as np
+import os
 import six.moves.cPickle as pickle
 import chainer
 import chainer.links as L
 import chainer.functions as F
 from chainer import optimizers, Variable
-with open('samvideo.sixteen', mode ='r') as f:
-		data = pickle.load(f)
+
+filelist = os.listdir("binary_list/data/testUCF-10")
+data = np.empty((0,18,240,320,3), dtype=np.float32)
+for file in filelist:
+	print  file
+	with open(file, mode ='r') as f:
+		single_data = pickle.load(f)
+		data = np.append(data, single_data["data"])
+
+
+
+
 
 print data["samvideo"].shape
 data = data["samvideo"]
