@@ -2,9 +2,9 @@
 #coding: UTF-8
 import cv2
 import os
-import sys
+#import sys
 import numpy as np
-import six.moves.cPickle as pickle
+#import six.moves.cPickle as pickle
 
 """
 chainerでは配列の形を[id番号, チャネル数，d1, d2, d3]
@@ -47,7 +47,7 @@ class VideoRead:
 		
 
 
-	def makelist_dir(self, dirname):
+	def makelist_dir(self, dirname, num_label):
 		assert(os.path.exists(dirname)), "not exist directory"
 		filelist = os.listdir(dirname)
 		all_video = np.empty((0,18,240,320,3), dtype=np.float32)
@@ -59,13 +59,14 @@ class VideoRead:
 
 		all_video = all_video.transpose(0,4,1,2,3)
 		print all_video.shape
-		data = {"data":all_video}# ,"label": t}
+		data = {"data":all_video ,"label": num_label}
 
-		with open('binary_list/'+dirname+'.pkl', mode ='wb') as f:
-			assert(os.path.exists('binary_list')), "not exist directory"
-			pickle.dump(data,f)
+		#------バイナリに書き込む用の記述--------------------------------
+		#with open('binary_list/'+dirname+'.pkl', mode ='wb') as f:
+		#	assert(os.path.exists('binary_list')), "not exist directory"
+		#	pickle.dump(data,f)
+		#----------------------------------------------------------------
+		return data
 
-
-v = VideoRead()
-
-v.makelist_dir(sys.argv[1])
+#v = VideoRead()
+#v.makelist_dir(sys.argv[1], 1)
