@@ -2,17 +2,19 @@
 #coding: UTF-8
 import cv2
 import os
-#import sys
-import numpy
-from chainer import cuda
-xp = numpy #cuda.cupy #ここをnumpyかcupyに
+import numpy as np
+from chainer import cuda, datasets
+xp = np
+
+cp = cuda.cupy #ここをnumpyかcupyに
 #import six.moves.cPickle as pickle
 
 """
 chainerでは配列の形を[id番号, チャネル数，d1, d2, d3]
 にする必要がある
 im00くらいでしか動かないのでそこで配列のファイルを生成
-してください．→gpマシンで動くようになりました．
+してください．
+→gpマシンで動くようになりました．
 バイナリに書き込まなくても問題ありません．
 dataset/category/datus となっている場合
 
@@ -91,8 +93,23 @@ class VideoRead:
 			labels = xp.append(labels, label, axis=0)
 			num_label += 1
 
+		
 		return data, labels
 
+	def combine_data_label(self, path): #TupleDataset型に変換
+		assert(os.path.exists(path)), "not exist directory"
+		data, label = self.makelist_all_class(path)
+		N = 80 #学習に使用するサイズ
+		#学習用とテスト用にファイルを分ける	
+		with cuda.Device(1):
+			x_gpu = cp.array(data)
+			y_gpu = cp.array(label)
+			x_train, x_test = cp.split(x_gpu, [N])
+			y_train, y_test = cp.split(y_gpu, [N])
+		#1.11以降用のデータセット定義: TupleDataset型
+		train = datasets.tuple_dataset.TupleDataset(x_train, y_train)
+		test = datasets.tuple_dataset.TupleDataset(x_test, y_test)
 
-#v = VideoRead()
-#d, l = v.makelist_all_class(sys.argv[1])
+		print type(x_train)
+		return train, test
+

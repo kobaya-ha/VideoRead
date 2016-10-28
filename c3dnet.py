@@ -1,8 +1,5 @@
-import numpy as np
-
 import chainer
 import chainer.functions as F
-from chainer import initializers
 import chainer.links as L
 
 
@@ -30,8 +27,7 @@ class C3D(chainer.Chain):
         h = self.fc4(h)
         h = self.fc5(h)
         h = self.fc6(h)
-        
-
+ 
         loss = F.softmax_cross_entropy(h, t)
         chainer.report({'loss': loss, 'accuracy': F.accuracy(h, t)}, self)
         return loss
